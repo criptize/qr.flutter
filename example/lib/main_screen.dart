@@ -35,20 +35,22 @@ class _MainScreenState extends State<MainScreen> {
           size: Size.square(size),
           painter: QrPainter(
             data: message,
+            gapless: true,
             version: QrVersions.auto,
             eyeStyle: const QrEyeStyle(
               eyeShape: QrEyeShape.squareRounded,
-              radius: 10,
+              radius: 15,
               color: Colors.green,
             ),
             dataModuleStyle: const QrDataModuleStyle(
-              dataModuleShape: QrDataModuleShape.square,
+              dataModuleShape: QrDataModuleShape.squareRounded,
               color: Colors.black,
+              radius: 3,
             ),
             // size: 320.0,
             embeddedImage: snapshot.data,
             embeddedImageStyle: QrEmbeddedImageStyle(
-              size: Size.square(60),
+              size: Size.square(50),
             ),
           ),
         );
