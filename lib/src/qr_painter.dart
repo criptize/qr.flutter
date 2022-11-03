@@ -188,13 +188,13 @@ class QrPainter extends CustomPainter {
         FinderPatternPosition.topRight, canvas, paintMetrics);
 
     // DEBUG: draw the inner content boundary
-//    final paint = Paint()..style = ui.PaintingStyle.stroke;
-//    paint.strokeWidth = 1;
-//    paint.color = const Color(0x55222222);
-//    canvas.drawRect(
-//        Rect.fromLTWH(paintMetrics.inset, paintMetrics.inset,
-//            paintMetrics.innerContentSize, paintMetrics.innerContentSize),
-//        paint);
+    //    final paint = Paint()..style = ui.PaintingStyle.stroke;
+    //    paint.strokeWidth = 1;
+    //    paint.color = const Color(0x55222222);
+    //    canvas.drawRect(
+    //        Rect.fromLTWH(paintMetrics.inset, paintMetrics.inset,
+    //            paintMetrics.innerContentSize, paintMetrics.innerContentSize),
+    //        paint);
 
     double left;
     double top;
@@ -234,12 +234,33 @@ class QrPainter extends CustomPainter {
           paintMetrics.pixelSize + pixelHTweak,
           paintMetrics.pixelSize + pixelVTweak,
         );
-        if (dataModuleStyle.dataModuleShape == QrDataModuleShape.square) {
-          canvas.drawRect(squareRect, paint);
-        } else {
-          final roundedRect = RRect.fromRectAndRadius(squareRect,
-              Radius.circular(paintMetrics.pixelSize + pixelHTweak));
-          canvas.drawRRect(roundedRect, paint);
+
+        switch (dataModuleStyle.dataModuleShape) {
+          case QrDataModuleShape.square:
+            canvas.drawRect(squareRect, paint);
+            break;
+          // case QrDataModuleShape.squareRounded:
+          //   final roundedOuterStrokeRect = RRect.fromRectAndCorners(
+          //     squareRect,
+          //     bottomLeft:
+          //         Radius.circular(_isFinderPatternPosition(x, y) ? 3 : 0),
+          //     topLeft: Radius.circular(0),
+          //     bottomRight: Radius.circular(0),
+          //     topRight: Radius.circular(0),
+          //   );
+          //   // RRect.fromRectAndRadius(squareRect, Radius.circular(0));
+          //   canvas.drawRRect(roundedOuterStrokeRect, paint);
+          //   // canvas.drawRect(squareRect, paint);
+          //   break;
+          case QrDataModuleShape.circle:
+            final roundedRect = RRect.fromRectAndRadius(squareRect,
+                Radius.circular(paintMetrics.pixelSize + pixelHTweak));
+            canvas.drawRRect(roundedRect, paint);
+            break;
+          default:
+            final roundedRect = RRect.fromRectAndRadius(squareRect,
+                Radius.circular(paintMetrics.pixelSize + pixelHTweak));
+            canvas.drawRRect(roundedRect, paint);
         }
       }
     }
@@ -336,22 +357,43 @@ class QrPainter extends CustomPainter {
     final dotRect = Rect.fromLTWH(offset.dx + metrics.pixelSize + strokeAdjust,
         offset.dy + metrics.pixelSize + strokeAdjust, dotSize, dotSize);
 
-    if (eyeStyle.eyeShape == QrEyeShape.square) {
-      canvas.drawRect(outerRect, outerPaint);
-      canvas.drawRect(innerRect, innerPaint);
-      canvas.drawRect(dotRect, dotPaint);
-    } else {
-      final roundedOuterStrokeRect =
-          RRect.fromRectAndRadius(outerRect, Radius.circular(radius));
-      canvas.drawRRect(roundedOuterStrokeRect, outerPaint);
+    switch (eyeStyle.eyeShape) {
+      case QrEyeShape.square:
+        canvas.drawRect(outerRect, outerPaint);
+        canvas.drawRect(innerRect, innerPaint);
+        canvas.drawRect(dotRect, dotPaint);
+        break;
+      case QrEyeShape.squareRounded:
+        final roundedOuterStrokeRect = RRect.fromRectAndRadius(
+            outerRect, Radius.circular(eyeStyle.radius));
+        canvas.drawRRect(roundedOuterStrokeRect, outerPaint);
+        canvas.drawRect(innerRect, innerPaint);
+        final roundedDotStrokeRect = RRect.fromRectAndRadius(
+            dotRect, Radius.circular(eyeStyle.radius / 2));
+        canvas.drawRRect(roundedDotStrokeRect, dotPaint);
+        break;
+      case QrEyeShape.circle:
+        final roundedOuterStrokeRect =
+            RRect.fromRectAndRadius(outerRect, Radius.circular(radius));
+        canvas.drawRRect(roundedOuterStrokeRect, outerPaint);
+        final roundedInnerStrokeRect =
+            RRect.fromRectAndRadius(outerRect, Radius.circular(innerRadius));
+        canvas.drawRRect(roundedInnerStrokeRect, innerPaint);
+        final roundedDotStrokeRect =
+            RRect.fromRectAndRadius(dotRect, Radius.circular(dotSize));
+        canvas.drawRRect(roundedDotStrokeRect, dotPaint);
+        break;
 
-      final roundedInnerStrokeRect =
-          RRect.fromRectAndRadius(outerRect, Radius.circular(innerRadius));
-      canvas.drawRRect(roundedInnerStrokeRect, innerPaint);
-
-      final roundedDotStrokeRect =
-          RRect.fromRectAndRadius(dotRect, Radius.circular(dotSize));
-      canvas.drawRRect(roundedDotStrokeRect, dotPaint);
+      default:
+        final roundedOuterStrokeRect =
+            RRect.fromRectAndRadius(outerRect, Radius.circular(radius));
+        canvas.drawRRect(roundedOuterStrokeRect, outerPaint);
+        final roundedInnerStrokeRect =
+            RRect.fromRectAndRadius(outerRect, Radius.circular(innerRadius));
+        canvas.drawRRect(roundedInnerStrokeRect, innerPaint);
+        final roundedDotStrokeRect =
+            RRect.fromRectAndRadius(dotRect, Radius.circular(dotSize));
+        canvas.drawRRect(roundedDotStrokeRect, dotPaint);
     }
   }
 
